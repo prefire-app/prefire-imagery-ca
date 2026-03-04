@@ -1,22 +1,22 @@
 from dotenv import load_dotenv
 import os
+import sys
+
 from src.convert.sid_to_geotiff import sid_to_geotiff
 from src.convert.geotiff_to_cog import geotiff_to_cog
 from src.convert.validate_cogs import validate_cogs
-import sys
+from src.shared.validate_env import validate_env
 
 def main():
     '''
     Main function to run the convert pipeline
     '''
     load_dotenv()
-
-    if (not os.getenv("SID_DIRECTORY") or 
-        not os.getenv("GEOTIFF_DIRECTORY") or 
-        not os.getenv("COG_DIRECTORY") or 
-        not os.getenv("COUNTY_LIST")):
-        print("Error: Missing required environment variables. Please check your .env file.")
+    if not validate_env():
         return
+    
+    
+    
 
     print("Running the convert pipeline...")
     if (sys.argv and len(sys.argv) > 1 and "sid_to_geotiff" in sys.argv):

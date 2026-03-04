@@ -1,0 +1,92 @@
+{
+	"id": "",
+	"county": "",
+	"fips": "",
+	"uris": {
+		"s3": null,
+		"http": null,
+		"local": null
+	},
+	"spatial": {
+		"bbox": [
+			null,
+			null,
+			null,
+			null
+		],
+		"footprint": {
+			"type": "Polygon",
+			"coordinates": [
+				[
+					[null, null],
+					[null, null],
+					[null, null],
+					[null, null],
+					[null, null]
+				]
+			]
+		},
+		"crs": {
+			"epsg": null,
+			"wkt": null
+		},
+		"width": null,
+		"height": null,
+		"pixel_size": {
+			"x": null,
+			"y": null,
+			"units": null
+		},
+		"transform": null
+	},
+	"raster": {
+		"bands": null,
+		"dtype": null,
+		"nodata": null,
+		"colorinterp": null
+	},
+	"acquisition": {
+		"datetime": null,
+		"date": null,
+		"source": null
+	},
+	"integrity": {
+		"file_size_bytes": null,
+		"etag": null,
+		"checksum": {
+			"algorithm": null,
+			"value": null
+		}
+	},
+	"cog": {
+		"is_cog": null,
+		"layout": null,
+		"blocksize": {
+			"x": null,
+			"y": null
+		},
+		"compression": null,
+		"interleave": null,
+		"overview_resampling": null,
+		"overview_levels": null
+	},
+	"lineage": {
+		"source": {
+			"sid_name": null,
+			"geotiff_name": null
+		},
+		"processing": {
+			"processed_at": null,
+			"tools": {
+				"python": null,
+				"gdal": null
+			},
+			"commands": null
+		}
+	},
+	"stac": {
+		"item_path": null,
+		"collection": null,
+		"asset_key": "data"
+	}
+}

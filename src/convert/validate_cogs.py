@@ -8,6 +8,7 @@ def validate_cogs(COG_DIRECTORY):
 
     cogs = glob.glob(os.path.join(COG_DIRECTORY, "*.cog"))
     total = len(cogs)
+    print(f"Validating {total} COG files...")
     for i, filename in enumerate(cogs, start=1):
         try:
             result = subprocess.run(["rio", "cogeo", "validate", filename], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
