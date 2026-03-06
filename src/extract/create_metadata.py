@@ -1,17 +1,3 @@
-"""create_metadata.py
-
-Assembles the full per-COG metadata dict from:
-  - raster/spatial extraction   (extract_raster_metadata)
-  - COG-internals extraction    (extract_cog_metadata)
-  - identity/storage fields     (id, county, fips, URIs)
-  - integrity fields            (file size, SHA-256, ETag)
-  - lineage fields              (SID name, GeoTIFF name, processing provenance)
-
-Also provides:
-  write_metadata_json  — write the dict to a JSON sidecar file
-  append_metadata_csv  — append a flat row to the shared CSV summary
-"""
-
 from __future__ import annotations
 
 import copy
@@ -29,16 +15,12 @@ from osgeo import gdal
 from src.extract.extract_cog_metadata import extract_cog_metadata
 from src.extract.extract_raster_metadata import extract_raster_metadata
 
-
 _TEMPLATE_PATH = Path(__file__).parent / "metadata_templates" / "template.json"
-
 
 def _load_template() -> dict:
     with open(_TEMPLATE_PATH) as f:
         return json.load(f)
 
-
-# Helper functions
 
 def _sha256(path: str, chunk: int = 1 << 20) -> str:
     h = hashlib.sha256()
@@ -47,18 +29,10 @@ def _sha256(path: str, chunk: int = 1 << 20) -> str:
             h.update(block)
     return h.hexdigest()
 
-
-
 def _gdal_version() -> str:
     return gdal.VersionInfo("RELEASE_NAME")
 
-
 def _parse_filename(filename: str) -> dict:
-    """Derive id, county, fips, acquisition year from filenames like
-    ``alameda_ca001_2024_1.cog``.
-
-    Pattern: ``{county}_{state+fips3}_{year}_{index}.ext``
-    """
     stem = Path(filename).stem
     parts = stem.split("_")
     return {
@@ -67,8 +41,6 @@ def _parse_filename(filename: str) -> dict:
         "fips": parts[1] if len(parts) > 1 else None,
         "acquisition_year": parts[2] if len(parts) > 2 else None,
     }
-
-
 
 def build_metadata(
     cog_path: str,
@@ -84,11 +56,6 @@ def build_metadata(
     collection: str | None = None,
     compute_checksum: bool = False,
 ) -> dict:
-    """Assemble and return a complete metadata dict for *cog_path*.
-
-    All keyword arguments are optional; any field that cannot be determined
-    will be left as ``null`` (matching the template).
-    """
     meta = _load_template()
     filename = os.path.basename(cog_path)
     parsed = _parse_filename(filename)
@@ -146,7 +113,6 @@ def build_metadata(
 
     return meta
 
-
 def write_metadata_json(metadata: dict, output_path: str) -> None:
     """Serialise *metadata* to a JSON sidecar at *output_path*."""
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -154,9 +120,6 @@ def write_metadata_json(metadata: dict, output_path: str) -> None:
         json.dump(metadata, f, indent=2)
     print(f"  Wrote metadata JSON → {output_path}")
 
-
-
-# Stable CSV column order — do not reorder; add new columns at the end only.
 _CSV_COLUMNS = [
     "id", "county", "fips", "s3_uri",
     "bbox_min_lon", "bbox_min_lat", "bbox_max_lon", "bbox_max_lat",
@@ -216,7 +179,6 @@ def _flatten_for_csv(metadata: dict) -> dict:
 
 
 def append_metadata_csv(metadata: dict, csv_path: str) -> None:
-    """Append a flat metadata row to *csv_path* (creates file + header if missing)."""
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     file_exists = os.path.isfile(csv_path)
     row = _flatten_for_csv(metadata)

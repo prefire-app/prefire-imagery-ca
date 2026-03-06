@@ -12,9 +12,6 @@ def main():
     if not validate_env():
         return
     
-    
-    
-
     print("Running the convert pipeline...")
     if (sys.argv and len(sys.argv) > 1 and "sid_to_geotiff" in sys.argv):
         try:

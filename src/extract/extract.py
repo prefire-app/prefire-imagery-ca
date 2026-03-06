@@ -42,11 +42,6 @@ def extract_cog(
     acquisition_date: str | None = None,
     collection: str | None = None,
 ) -> dict:
-    """Extract, assemble, and write all metadata for a single COG.
-
-    Returns the metadata dict so the caller (e.g. load.py) can inspect or
-    forward the result.
-    """
     stem = Path(cog_path).stem
 
 
@@ -79,17 +74,6 @@ def main(
     cog_uris: dict[str, dict] | None = None,
     collection: str | None = None,
 ) -> list[dict]:
-    """Run the full extraction pipeline for all COGs in COG_DIRECTORY.
-
-    Args:
-        cog_uris:   Optional dict keyed by COG *basename* mapping to
-                    ``{"s3_uri": ..., "etag": ...}``.  Populated by the
-                    load step so URIs are present when metadata is built.
-        collection: Optional STAC collection name written to every item.
-
-    Returns:
-        List of metadata dicts (one per successfully processed COG).
-    """
     load_dotenv()
     if not validate_env():
         return []

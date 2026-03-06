@@ -1,11 +1,3 @@
-"""create_stac.py
-
-Builds a STAC 1.0 Item from a per-COG metadata dict and writes it to disk.
-
-Extensions used:
-  - Projection  https://stac-extensions.github.io/projection/v1.1.0/schema.json
-"""
-
 from __future__ import annotations
 
 import json
@@ -17,7 +9,6 @@ _EXTENSIONS = [
 ]
 
 def build_stac_item(metadata: dict) -> dict:
-    """Build and return a STAC 1.0 Feature dict from *metadata*."""
     spatial   = metadata["spatial"]
     raster    = metadata["raster"]
     cog       = metadata["cog"]
@@ -26,10 +17,8 @@ def build_stac_item(metadata: dict) -> dict:
     stac_cfg  = metadata["stac"]
     uris      = metadata["uris"]
 
-    # STAC datetime: use datetime > date > None
     stac_datetime = acq.get("datetime") or acq.get("date") or None
 
-    # Asset href: prefer S3, fall back to HTTP then local
     asset_href = uris.get("s3") or uris.get("http") or uris.get("local")
 
     item: dict = {
@@ -40,26 +29,17 @@ def build_stac_item(metadata: dict) -> dict:
         "bbox": spatial["bbox"],
         "geometry": spatial["footprint"],
         "properties": {
-            # --- core temporal ---
             "datetime": stac_datetime,
             "created":  lineage["processing"]["processed_at"],
-
-            # --- identity ---
             "county": metadata["county"],
             "fips":   metadata["fips"],
-
-            # --- projection extension (proj:) ---
             "proj:epsg":      spatial["crs"]["epsg"],
             "proj:wkt2":      spatial["crs"]["wkt"],
-            "proj:shape":     [spatial["height"], spatial["width"]],   # [rows, cols]
+            "proj:shape":     [spatial["height"], spatial["width"]],   
             "proj:transform": spatial["transform"],
-
-            # --- raster summary ---
-            "gsd":    spatial["pixel_size"]["x"],    # ground sample distance (x)
+            "gsd":    spatial["pixel_size"]["x"],   
             "bands":  raster["bands"],
             "dtype":  raster["dtype"],
-
-            # --- COG internals ---
             "cog:is_cog":             cog["is_cog"],
             "cog:blocksize_x":        cog["blocksize"]["x"],
             "cog:blocksize_y":        cog["blocksize"]["y"],
@@ -67,8 +47,6 @@ def build_stac_item(metadata: dict) -> dict:
             "cog:interleave":         cog["interleave"],
             "cog:overview_resampling": cog["overview_resampling"],
             "cog:overview_count":     len(cog["overview_levels"] or []),
-
-            # --- lineage ---
             "lineage:sid_name":        lineage["source"]["sid_name"],
             "lineage:geotiff_name":    lineage["source"]["geotiff_name"],
             "lineage:processed_at":    lineage["processing"]["processed_at"],
@@ -84,7 +62,6 @@ def build_stac_item(metadata: dict) -> dict:
         "links": [],
     }
 
-    # Optional collection reference
     if stac_cfg.get("collection"):
         item["collection"] = stac_cfg["collection"]
 
