@@ -17,3 +17,4 @@ def upload_to_s3(file_path: str, bucket_name: str, object_name: str) -> None:
         print(f"Uploaded {file_path} → s3://{bucket_name}/{object_name}")
     except Exception as e:
         print(f"Error uploading {file_path}: {e}")
+        raise

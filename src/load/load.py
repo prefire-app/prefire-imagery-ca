@@ -22,10 +22,10 @@ REQUIRED_ENV_VARS = [
 ]
 
 
-def run_load():
+def run_load() -> bool:
     """Upload COGs to S3, extract metadata (using returned URIs), then upload metadata."""
     if not validate_env(REQUIRED_ENV_VARS):
-        return
+        return False
 
     cog_dir = os.getenv("COG_DIRECTORY")
     bucket = os.getenv("BUCKET_NAME")
@@ -34,12 +34,20 @@ def run_load():
     print("--- Load Step ---")
 
     print("[1/3] Uploading COGs to S3...")
-    cog_uris = cog_to_s3(cog_dir, bucket, prefix)
+    try:
+        cog_uris = cog_to_s3(cog_dir, bucket, prefix)
+    except RuntimeError as e:
+        print(f"COG upload failed: {e} Aborting load step.")
+        return False
 
     print("[2/3] Extracting metadata...")
-    run_extract(cog_uris=cog_uris)
+    metadata = run_extract(cog_uris=cog_uris)
+    if not metadata:
+        print("Extract step returned no results. Aborting load step.")
+        return False
 
     print("[3/3] Uploading metadata to S3...")
     metadata_to_s3()
 
     print("Load step complete.")
+    return True

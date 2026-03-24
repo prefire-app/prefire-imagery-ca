@@ -29,26 +29,30 @@ def main():
             return
 
     if args.command == "convert":
-        _run_convert()
+        if not _run_convert():
+            sys.exit(1)
     elif args.command == "load":
-        _run_load()
+        if not _run_load():
+            sys.exit(1)
     elif args.command == "extract":
         _run_extract()
     elif args.command == "all":
-        _run_convert()
+        if not _run_convert():
+            print("Convert step failed. Skipping load step.")
+            sys.exit(1)
         _run_load()  # load calls extract internally
 
 
-def _run_convert():
+def _run_convert() -> bool:
     """Run the convert step."""
     from src.convert.convert import run_convert
-    run_convert()
+    return run_convert()
 
 
-def _run_load():
+def _run_load() -> bool:
     """Run the load step (includes extract)."""
     from src.load.load import run_load
-    run_load()
+    return run_load()
 
 
 def _run_extract():

@@ -5,14 +5,18 @@ import os
 import subprocess
 
 
-def validate_cogs(cog_directory: str) -> None:
+def validate_cogs(cog_directory: str) -> bool:
     """Run ``rio cogeo validate`` on every .cog file in *cog_directory*.
 
     Args:
         cog_directory: Directory containing .cog files to validate.
+
+    Returns:
+        True if all COGs are valid, False if any failed validation.
     """
     cogs = glob.glob(os.path.join(cog_directory, "*.cog"))
     total = len(cogs)
+    failures = 0
     print(f"Validating {total} COG files...")
 
     for i, filename in enumerate(cogs, start=1):
@@ -30,4 +34,6 @@ def validate_cogs(cog_directory: str) -> None:
                 raise ValueError(f"{filename} is NOT a valid COG.")
         except Exception as e:
             print(f"Error validating {filename}: {e}")
+            failures += 1
+    return failures == 0
 
